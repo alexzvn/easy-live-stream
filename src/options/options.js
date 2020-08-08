@@ -1,14 +1,12 @@
 import Vue from 'vue';
 import App from './App';
-import Vuetify from 'vuetify/lib';
+import vuetify from './../plugins/vuetify';
 
 global.browser = require('webextension-polyfill');
-
-Vue.use(Vuetify);
 
 /* eslint-disable no-new */
 new Vue({
   el: "#app",
-  vuetify: new Vuetify(),
+  vuetify,
   render: h => h(App),
 });

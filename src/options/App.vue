@@ -5,7 +5,8 @@
       app
     >
       <v-list dense>
-        <v-list-item link>
+
+        <v-list-item link :to="{path: '/home'}">
           <v-list-item-action>
             <v-icon>mdi-home</v-icon>
           </v-list-item-action>
@@ -13,14 +14,35 @@
             <v-list-item-title>Home</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item link>
+  
+        <v-list-item link :to="{path: '/livestream'}">
           <v-list-item-action>
-            <v-icon>mdi-email</v-icon>
+            <v-icon>mdi-antenna</v-icon>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title>Contact</v-list-item-title>
+            <v-list-item-title>Live Stream</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+  
+        <v-list-item link :to="{path: '/products'}">
+          <v-list-item-action>
+            <v-icon>mdi-package-variant-closed</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Sản phẩm</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+
+        <v-list-item link :to="{path: '/orders'}">
+          <v-list-item-action>
+            <v-icon>mdi-file-document-multiple-outline</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Đơn hàng</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+
+  
       </v-list>
     </v-navigation-drawer>
 
@@ -34,38 +56,17 @@
     </v-app-bar>
 
     <v-main>
-      <v-container
-        class="fill-height"
-        fluid
-      >
-        <v-row
-          align="center"
-          justify="center"
-        >
-          <v-col class="text-center">
-            <v-tooltip left>
-              <template v-slot:activator="{ on }">
-                <v-btn
-                  :href="source"
-                  icon
-                  large
-                  target="_blank"
-                  v-on="on"
-                >
-                  <v-icon large>mdi-code-tags</v-icon>
-                </v-btn>
-              </template>
-              <span>Source</span>
-            </v-tooltip>
-          </v-col>
-        </v-row>
+      <v-container fluid>
+        <v-fade-transition mode="out-in">
+          <router-view></router-view>
+        </v-fade-transition>
       </v-container>
     </v-main>
     <v-footer
       color="indigo"
       app
     >
-      <span class="white--text">&copy; {{ new Date().getFullYear() }}</span>
+      <span class="white--text">&copy; {{ new Date().getFullYear() }} Easy Live Stream</span>
     </v-footer>
   </v-app>
 </template>

@@ -9,7 +9,7 @@
     <div class="content-popup">
       <div class="header-content">
         <span class="title-content">Lịch sử bán hàng online</span>
-        <button class="btn-popup btn-pri">Quản lý đơn hàng</button>
+        <a class="btn-popup btn-pri" href="/options/options.html" target="_blank">Quản lý đơn hàng</a>
       </div>
       <div class="wrap-list-order">
         <table class="tb-order">
@@ -46,7 +46,7 @@
         </table>
       </div>
       <div class="wrap-action" style="text-align: center;">
-        <button class="btn-popup btn-second btn-action">Bắt đầu Live Stream</button>
+        <a href="https://www.facebook.com/live/producer/" target="_blank" class="btn-popup btn-second btn-action">Bắt đầu Live Stream</a>
         <button class="btn-popup btn-pri btn-action">Xuất Excel</button>
       </div>
     </div>
@@ -62,6 +62,10 @@ export default {
 </script>
 
 <style lang="css" scoped>
+a {
+  text-decoration: none;
+}
+
 button {
   border: none;
   cursor: pointer;

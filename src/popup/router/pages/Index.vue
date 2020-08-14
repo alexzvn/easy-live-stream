@@ -2,7 +2,7 @@
   <div class="main-popup">
     <div class="header-popup">
       <span class="product-name">Easy Live Stream</span>
-      <button class="btn-close"><i class="ti-close" aria-hidden="true"></i></button>
+      <button @click="closePopup()" class="btn-close"><i class="ti-close" aria-hidden="true"></i></button>
     </div>
     <div class="clearfix"></div>
 
@@ -57,6 +57,11 @@
 export default {
   data() {
     return {};
+  },
+  methods: {
+    closePopup() {
+      window.close();
+    },
   },
 };
 </script>

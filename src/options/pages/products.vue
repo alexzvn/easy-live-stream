@@ -66,7 +66,7 @@
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="green darken-1" text @click="closeDialog()">Disagree</v-btn>
+                <v-btn class="text-capitalize" color="light" @click="closeDialog()">Đóng</v-btn>
                 <v-btn class="text-capitalize" type="submit" :loading="statusSubmitButton.loading" :disabled="false" color="primary">
                   <v-icon left>{{ statusSubmitButton.icon }}</v-icon> {{ statusSubmitButton.text }}
                 </v-btn>

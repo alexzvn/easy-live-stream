@@ -203,12 +203,7 @@ export default {
   computed: {
     displayValue: {
       get: function() {
-        if (this.isInputActivePriceAddnew) {
-          return this.price.toString();
-        } else {
-          // User is not modifying now. Format display value for user interface
-          return this.formatCurrency(this.price);
-        }
+          return this.isInputActivePriceAddnew ? return this.price.toString() :  this.formatCurrency(this.price);
       },
       set: function(modifiedValue) {
         let newValue = parseFloat(modifiedValue.replace(/[^\d.]/g, ''));

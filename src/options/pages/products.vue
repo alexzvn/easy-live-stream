@@ -25,7 +25,7 @@
               <td>{{ index }}</td>
               <td>{{ item.name }}</td>
               <td>{{ formatCurrency(item.price) }}</td>
-              <td>{{ item.create_at }}</td>
+              <td>{{ item.created_at }}</td>
               <td>
                 <v-btn icon color="success">
                   <v-icon>mdi-pencil</v-icon>
@@ -43,14 +43,14 @@
       </div>
     </v-col>
     <!-- Modal add new product -->
-    <diaglog-add-product ref="childDialogProduct" v-on:childStatusToParent="proccessWhenAddProductDone"></diaglog-add-product>
+    <add-product-dialog ref="dialogAddProduct" v-on:add-product="addProduct"></add-product-dialog>
     <!-- Snackbar -->
     <v-col class="snackbar-info" cols="12">
       <v-snackbar v-model="snackbar.visible" :color="snackbar.color" timeout="2000" top="top">
         {{ snackbar.text }}
         <template v-slot:action="{ attrs }">
           <v-btn dark text v-bind="attrs" @click="snackbar.visible = false">
-            Close
+            Đóng
           </v-btn>
         </template>
       </v-snackbar>
@@ -58,11 +58,11 @@
   </v-row>
 </template>
 <script>
-import dialogProduct from './component/product_component/diaglog_product';
+import AddProductDialog from './components/product/AddProductDialog';
 
 export default {
   components: {
-    'diaglog-add-product': dialogProduct,
+    AddProductDialog,
   },
   data: () => {
     return {
@@ -72,28 +72,28 @@ export default {
         {
           name: 'Áo phông A size S',
           price: 100000,
-          create_at: '16/08/2020',
+          created_at: new Date('2020-08-18'),
         },
         {
           name: 'Áo phông B size L',
           price: 150000,
-          create_at: '17/08/2020',
+          created_at: new Date('2020-08-18'),
         },
         {
           name: 'Áo khoác C size L',
           price: 500000,
-          create_at: '18/08/2020',
+          created_at: new Date('2020-08-18'),
         },
         {
           name: 'Áo khoác D size M',
           price: 600000,
-          create_at: '19/08/2020',
+          created_at: new Date('2020-08-18'),
         },
       ],
       snackbar: {
-        color: 'success',
+        color: '',
         visible: false,
-        text: 'Thêm mới thành công',
+        text: '',
       },
     };
   },
@@ -102,25 +102,24 @@ export default {
       return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
     },
     openDialog() {
-      this.$refs.childDialogProduct.openModalAddProduct();
+      this.$refs.dialogAddProduct.open();
     },
-    proccessWhenAddProductDone(obj) {
-      const status = obj.status;
-      const itemProduct = obj.item;
-      switch (status) {
-        case 200:
-        case 202:
-          this.snackbar.text = 'Thêm thành công sản phẩm';
-          this.snackbar.visible = true;
-          this.snackbar.color = 'success';
-          this.desserts = [...this.desserts, itemProduct];
-          break;
-        default:
-          this.snackbar.text = 'Thêm thất bại';
-          this.snackbar.visible = true;
-          this.snackbar.color = 'rgb(176, 0, 32)';
-          break;
+    addProduct(data) {
+      if (data.response.ok) {
+        this.alert('Thêm thành công sản phẩm');
+        this.desserts.push(data.item);
+        this.$refs.dialogAddProduct.reset();
+        this.$refs.dialogAddProduct.close();
+      } else {
+        this.alert('Thêm thất bại', 'rgb(176, 0, 32)');
       }
+    },
+    alert(text = '', color = 'success') {
+      this.snackbar = {
+        color: color,
+        text: text,
+        visible: true,
+      };
     },
   },
 };

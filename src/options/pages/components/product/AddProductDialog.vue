@@ -58,11 +58,8 @@ export default {
       this.dialog = false;
     },
     reset() {
-      try {
-        this.$refs.form.reset();
-      } catch (error) {
-        // ignore on reset value in form cause by bind computed model to input
-      }
+      this.$refs.form.resetValidation();
+      this.form = { name: '', price: 0 };
     },
     open() {
       this.dialog = true;
@@ -91,6 +88,8 @@ export default {
       },
       set: function(modifiedPrice) {
         this.form.price = modifiedPrice.replace(/[^\d.]/g, '') - 0 || 0;
+
+        return this.form.price;
       },
     },
   },

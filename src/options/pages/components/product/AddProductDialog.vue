@@ -91,8 +91,6 @@ export default {
       },
       set: function(modifiedPrice) {
         this.form.price = modifiedPrice.replace(/[^\d.]/g, '') - 0 || 0;
-
-        return this.form.price;
       },
     },
   },

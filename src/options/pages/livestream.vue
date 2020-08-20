@@ -8,9 +8,9 @@
             <v-spacer></v-spacer>
             <v-text-field v-model="search" append-icon="mdi-magnify" label="Tìm kiếm" single-line hide-details></v-text-field>
           </v-card-title>
-          <v-data-table v-model="selected" :headers="headers" :search="search" :items="desserts" item-key="name" show-select class="elevation-1">
+          <v-data-table v-model="selected" :headers="headers" :search="search" :items="data" item-key="name" show-select class="elevation-1">
             <template v-slot:item.actions="{ item }">
-              <v-btn icon color="success" @click="edit(item)">
+              <v-btn icon color="success">
                 <v-icon>mdi-pencil</v-icon>
               </v-btn>
               <v-btn icon color="#B00020">
@@ -41,15 +41,15 @@ export default {
         { text: 'Ngày', value: 'date' },
         { text: 'Hành động', value: 'actions', sortable: false, width: 120 },
       ],
-      desserts: [],
+      data: [],
     };
   },
   methods: {
     initialize() {
       fetch('https://jsonplaceholder.typicode.com/comments').then(async response => {
-        const data = await response.json();
+        const result = await response.json();
         if (!response.ok) return;
-        this.desserts = data.map(item => {
+        this.data = result.map(item => {
           return { name: item.email, comment: item.body, date: new Date().toLocaleDateString('vi-VN') };
         });
       });

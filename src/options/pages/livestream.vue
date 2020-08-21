@@ -9,7 +9,7 @@
             <v-text-field v-model="search" append-icon="mdi-magnify" label="Tìm kiếm" single-line hide-details></v-text-field>
           </v-card-title>
           <v-data-table v-model="selected" :headers="headers" :search="search" :items="data" item-key="name" show-select class="elevation-1">
-            <template v-slot:item.actions="{ item }">
+            <template v-slot:[`item.actions`]="{ item }">
               <v-btn icon color="success">
                 <v-icon>mdi-pencil</v-icon>
               </v-btn>

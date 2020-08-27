@@ -8,7 +8,10 @@
             <v-spacer></v-spacer>
             <v-text-field v-model="search" append-icon="mdi-magnify" label="Tìm kiếm" single-line hide-details></v-text-field>
           </v-card-title>
-          <v-data-table v-model="selected" :headers="headers" :search="search" :items="data" item-key="name" show-select class="elevation-1">
+          <v-data-table v-model="selected" :headers="headers" :search="search" :items="comments" item-key="name" show-select class="elevation-1">
+            <template v-slot:[`item.created_at`]="{ item }">
+              <span> {{ new Date(item.created_at).toLocaleString() }}</span>
+            </template>
             <template v-slot:[`item.actions`]="{ item }">
               <v-btn icon color="success">
                 <v-icon>mdi-pencil</v-icon>
@@ -37,22 +40,20 @@ export default {
           sortable: false,
           value: 'name',
         },
-        { text: 'Comment', value: 'comment' },
-        { text: 'Ngày', value: 'date' },
+        { text: 'Comment', value: 'message' },
+        { text: 'Ngày', value: 'created_at' },
         { text: 'Hành động', value: 'actions', sortable: false, width: 120 },
       ],
-      data: [],
+      comments: [],
     };
   },
   methods: {
     initialize() {
-      fetch('https://jsonplaceholder.typicode.com/comments').then(async response => {
-        const result = await response.json();
-        if (!response.ok) return;
-        this.data = result.map(item => {
-          return { name: item.email, comment: item.body, date: new Date().toLocaleDateString('vi-VN') };
-        });
-      });
+      // eslint-disable-next-line no-undef
+      app.Echo.channel(user._id).listen('CommentCreated', data => this.addComment(data.comment));
+    },
+    addComment(comment) {
+      this.comments.push(comment);
     },
   },
   created() {

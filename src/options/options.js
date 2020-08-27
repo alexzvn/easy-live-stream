@@ -1,15 +1,19 @@
 import Vue from 'vue';
-import App from './App';
+import Template from './App';
 import vuetify from './../plugins/vuetify';
 import router from './router';
+import Application from './../plugins/app';
 
-global.browser = require('webextension-polyfill');
+global.app = new Application();
 
+app.user().then(user => {
+  global.user = user;
 
-/* eslint-disable no-new */
-new Vue({
-  el: "#app",
-  router,
-  vuetify,
-  render: h => h(App),
+  // eslint-disable-next-line no-new
+  new Vue({
+    el: '#app',
+    router,
+    vuetify,
+    render: h => h(Template),
+  });
 });

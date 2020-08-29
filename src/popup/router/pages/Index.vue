@@ -6,7 +6,7 @@
     </div>
     <div class="clearfix"></div>
 
-    <div class="content-popup">
+    <div class="content-popup" v-if="user">
       <div class="header-content">
         <span class="title-content">Lịch sử bán hàng online</span>
         <a class="btn-popup btn-pri" href="/options/options.html" target="_blank">Quản lý đơn hàng</a>
@@ -54,14 +54,28 @@
 </template>
 
 <script>
+import App from './../../../plugins/app';
+
 export default {
   data() {
-    return {};
+    return {
+      app: new App(),
+      user: null,
+    };
   },
   methods: {
     closePopup() {
       window.close();
     },
+
+    async init() {
+      this.app.user().then(user => {
+        this.user = user;
+      });
+    },
+  },
+  created() {
+    this.init();
   },
 };
 </script>

@@ -7,7 +7,7 @@
     "48": "icons/icon_48.png",
     "128": "icons/icon_128.png"
   },
-  "permissions": ["cookies", "webRequest", "*://*.localhost/"],
+  "permissions": ["cookies", "webRequest", "*://*.streamfb.com/"],
   "browser_action": {
     "default_title": "easy-live-stream",
     "default_popup": "popup/popup.html"

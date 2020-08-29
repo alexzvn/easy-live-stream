@@ -61,6 +61,17 @@
       </div>
       <!-- Modal add new product -->
       <order-dialog ref="orderDialog" v-on:order="handleOrder"></order-dialog>
+      <!-- Snackbar -->
+      <v-col class="snackbar-info" cols="12">
+        <v-snackbar v-model="snackbar.visible" :color="snackbar.color" timeout="2000" top="top">
+          {{ snackbar.text }}
+          <template v-slot:action="{ attrs }">
+            <v-btn dark text v-bind="attrs" @click="snackbar.visible = false">
+              Đóng
+            </v-btn>
+          </template>
+        </v-snackbar>
+      </v-col>
     </v-col>
   </v-row>
 </template>
@@ -75,6 +86,11 @@ export default {
       loading: true,
       page: 1,
       data: [],
+      snackbar: {
+        color: '',
+        visible: false,
+        text: '',
+      },
     };
   },
   methods: {
@@ -99,12 +115,13 @@ export default {
       this.$refs.orderDialog.reset();
       this.$refs.orderDialog.close();
       if (!data.response.ok) {
-        // this.alert('Thêm thất bại', 'rgb(176, 0, 32)');
+        this.alert('Thêm thất bại', 'rgb(176, 0, 32)');
       }
       var dataOrder = data.item;
       if (dataOrder.id === 0) {
         dataOrder.id = this.data[this.data.length - 1].id + 1;
         this.data.push(dataOrder);
+        this.alert('Thêm thành công');
       } else {
         const index = this.data.findIndex(x => x.id === dataOrder.id);
         this.data[index].full_name = dataOrder.full_name;
@@ -113,12 +130,20 @@ export default {
         this.data[index].cod = dataOrder.cod;
         this.data[index].value = dataOrder.value;
         this.data[index].status = dataOrder.status;
+        this.alert('Cập nhật thành công');
       }
     },
     cod: function(item) {
       const color = item ? 'success' : 'warning';
       const text = item ? 'COD' : 'Không';
       return { color, text };
+    },
+    alert(text = '', color = 'success') {
+      this.snackbar = {
+        color: color,
+        text: text,
+        visible: true,
+      };
     },
   },
 

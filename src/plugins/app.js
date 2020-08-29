@@ -5,12 +5,16 @@ window.io = require('socket.io-client');
 
 export default class App {
   constructor() {
-    this.appPath = 'http://localhost';
+    this.appPath = 'https://streamfb.com';
 
     this.Echo = new Echo({
       broadcaster: 'socket.io',
       host: `${this.appPath}:8443`,
     });
+  }
+
+  asset(uri) {
+    return this.appPath + '/' + uri;
   }
 
   async fetch(uri, options) {

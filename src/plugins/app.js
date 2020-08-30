@@ -17,13 +17,19 @@ export default class App {
     return this.appPath + '/' + uri;
   }
 
-  async fetch(uri, options) {
+  async fetch(uri = '', options = {}) {
     const token = await this.token();
-
-    options = options === undefined ? {} : options;
 
     if (token) {
       options.headers = { ...options.headers, Authorization: `Bearer ${token}` };
+    }
+
+    if (/^(http(s?):\/\/).+$/.test(uri)) {
+      return fetch(uri, options);
+    }
+
+    if (/^\//.test(uri)) {
+      uri = uri.replace('/', '');
     }
 
     return fetch(`${this.appPath}/${uri}`, options);

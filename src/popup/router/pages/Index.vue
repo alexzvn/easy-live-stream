@@ -50,6 +50,9 @@
         <button class="btn-popup btn-pri btn-action">Xuất Excel</button>
       </div>
     </div>
+    <div class="content-popup" v-if="!user">
+      <a class="btn-popup btn-pri" :href="app.asset('login/facebook/redirect')" target="_blank">Đăng nhập</a>
+    </div>
   </div>
 </template>
 

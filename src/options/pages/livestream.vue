@@ -8,7 +8,7 @@
             <v-spacer></v-spacer>
             <v-text-field v-model="search" append-icon="mdi-magnify" label="Tìm kiếm" single-line hide-details></v-text-field>
           </v-card-title>
-          <v-data-table v-model="selected" :headers="headers" :search="search" :items="comments" item-key="name" show-select class="elevation-1">
+          <v-data-table v-model="selected" :headers="headers" :search="search" :items="comments" item-key="_id" show-select class="elevation-1">
             <template v-slot:[`item.created_at`]="{ item }">
               <span> {{ new Date(item.created_at).toLocaleString() }}</span>
             </template>
@@ -45,12 +45,27 @@ export default {
         { text: 'Hành động', value: 'actions', sortable: false, width: 120 },
       ],
       comments: [],
+      products: [],
     };
   },
   methods: {
     initialize() {
       // eslint-disable-next-line no-undef
       app.Echo.channel(user._id).listen('CommentCreated', data => this.addComment(data.comment));
+
+      app
+        .fetch('api/me/comments')
+        .then(res => res.json())
+        .then(body => {
+          this.comments = body.data;
+        });
+
+      app
+        .fetch('api/me/products?item=1000')
+        .then(res => res.json())
+        .then(body => {
+          this.products = body.data;
+        });
     },
     addComment(comment) {
       this.comments.push(comment);

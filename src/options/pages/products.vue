@@ -4,7 +4,7 @@
       <v-col cols="12">
         <h1>
           Thêm mới sản phẩm
-          <v-btn class="mx-2" fab small dark color="success" @click="openDialog()">
+          <v-btn class="mx-2" fab small dark color="success" @click="openCreate()">
             <v-icon dark>mdi-plus</v-icon>
           </v-btn>
         </h1>
@@ -17,16 +17,18 @@
                 <th>STT</th>
                 <th>Mã sản phẩm</th>
                 <th class="text-left">Tên</th>
+                <th class="text-left">Mô tả</th>
                 <th class="text-left">Giá</th>
                 <th class="text-left">Ngày tạo</th>
                 <th class="text-left">Hành động</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(item, index) in data" :key="index++">
+              <tr v-for="(item, index) in products" :key="index++">
                 <td>{{ index }}</td>
                 <td>{{ item.code }}</td>
                 <td>{{ item.name }}</td>
+                <td>{{ item.description }}</td>
                 <td>{{ formatCurrency(item.price) }}</td>
                 <td>{{ item.created_at }}</td>
                 <td>
@@ -46,7 +48,9 @@
         </div>
       </v-col>
       <!-- Modal add new product -->
-      <add-product-dialog ref="dialogAddProduct" v-on:add-product="addProduct" v-on:update-product="updateProduct"></add-product-dialog>
+      <add-product-dialog ref="dialogAddProduct" v-on:add-product="addProduct"></add-product-dialog>
+      <!-- Modal update product -->
+      <update-product-dialog ref="dialogUpdateProduct" v-on:update-product="updateProduct"></update-product-dialog>
       <!-- Modal delete new product -->
       <delete-product ref="dialogDeleteProduct" v-on:delete-product="deleteProduct"></delete-product>
       <!-- Snackbar -->
@@ -73,12 +77,14 @@
 </template>
 <script>
 import AddProductDialog from './components/product/AddProductDialog';
+import UpdateProductDialog from './components/product/UpdateProducDialog';
 import DeleteProduct from './components/product/DeleteProducts';
 
 import App from './../../plugins/app';
 export default {
   components: {
     AddProductDialog,
+    UpdateProductDialog,
     DeleteProduct,
   },
   data: () => {
@@ -86,7 +92,7 @@ export default {
       app: new App(),
       user: null,
       page: 1,
-      data: [],
+      products: [],
       snackbar: {
         color: '',
         visible: false,
@@ -98,43 +104,44 @@ export default {
     formatCurrency(price) {
       return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
     },
-    openDialog() {
+    openCreate() {
       this.$refs.dialogAddProduct.open();
     },
     openUpdate(item) {
-      this.$refs.dialogAddProduct.openUpdate(item);
+      this.$refs.dialogUpdateProduct.open(item);
     },
     openDelete(item) {
       this.$refs.dialogDeleteProduct.open(item);
     },
-    addProduct(data) {
+    async addProduct(result) {
       this.$refs.dialogAddProduct.reset();
       this.$refs.dialogAddProduct.close();
 
-      if (!data.response.ok) {
+      if (!result.response.ok) {
         this.alert('Thêm thất bại', 'rgb(176, 0, 32)');
         return;
       }
       this.alert('Thêm thành công sản phẩm');
-      this.data.unshift(data.item);
+      this.products.unshift(result.product);
     },
-    updateProduct(data) {
-      this.$refs.dialogAddProduct.reset();
-      this.$refs.dialogAddProduct.close();
-      if (!data.response.ok) {
+    updateProduct(result) {
+      this.$refs.dialogUpdateProduct.reset();
+      this.$refs.dialogUpdateProduct.close();
+      if (!result.response.ok) {
         this.alert('Cập nhật thất bại', 'rgb(176, 0, 32)');
         return;
       }
-      const item = data.item;
-      const index = this.data.findIndex(x => x.id === item.id);
-      this.data[index].code = item.code;
-      this.data[index].name = item.name;
-      this.data[index].price = item.price;
+      const item = result.product;
+      const index = this.products.findIndex(x => x._id === item._id);
+      this.products[index].code = item.code;
+      this.products[index].name = item.name;
+      this.products[index].description = item.description;
+      this.products[index].price = item.price;
     },
     deleteProduct(data) {
       if (data.res.ok) {
         this.alert('Xóa thành công sản phẩm');
-        this.data = this.data.filter(m => m._id !== data.item._id);
+        this.products = this.products.filter(m => m._id !== data.item._id);
         this.$refs.dialogDeleteProduct.close();
       } else {
         this.alert('Xóa thất bại', 'rgb(176, 0, 32)');
@@ -151,7 +158,7 @@ export default {
       this.app.fetch('api/me/products/').then(async res => {
         const listProducts = await res.json();
         if (!res.ok) return;
-        this.data = listProducts.data;
+        this.products = listProducts.data;
       });
     },
     async init() {

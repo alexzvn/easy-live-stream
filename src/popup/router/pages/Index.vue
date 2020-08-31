@@ -2,6 +2,7 @@
   <div class="main-popup">
     <div class="header-popup">
       <span class="product-name">Easy Live Stream</span>
+      <a :href="app.asset('logout')" v-if="user" target="_blank" class="logout">Đăng xuất</a>
       <button @click="closePopup()" class="btn-close"><i class="ti-close" aria-hidden="true"></i></button>
     </div>
     <div class="clearfix"></div>
@@ -51,7 +52,11 @@
       </div>
     </div>
     <div class="content-popup" v-if="!user">
-      <a class="btn-popup btn-pri" :href="app.asset('login/facebook/redirect')" target="_blank">Đăng nhập</a>
+      <div style="text-align: center; margin-bottom: 20px; margin-top: 20px">
+        <a class="btn-popup btn-pri" style="font-size: 18px;" :href="app.asset('login/facebook/redirect')" target="_blank">
+          Đăng nhập bằng facebook
+        </a>
+      </div>
     </div>
   </div>
 </template>
@@ -101,6 +106,14 @@ button:hover {
 
 button:focus {
   outline: none;
+}
+
+.logout {
+  position: absolute;
+  top: 8px;
+  right: 51px;
+  color: #232323;
+  font-weight: 400;
 }
 
 .main-popup {

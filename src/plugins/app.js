@@ -51,6 +51,10 @@ export default class App {
     return cookie ? cookie.value : null;
   }
 
+  formatCurrency(price) {
+    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
+  }
+
   echo() {
     return this.Echo;
   }

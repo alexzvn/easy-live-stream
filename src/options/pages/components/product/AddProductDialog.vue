@@ -8,10 +8,10 @@
             <v-card-text>
               <v-row>
                 <v-col cols="12">
-                  <v-text-field @focus="rule.code" v-model="form.code" :rules="rule.code" label="Mã sản phẩm" required> </v-text-field>
+                  <v-text-field v-model="form.code" :value="form.code.toUpperCase()" @input="form.code = form.code.toUpperCase()" label="Mã sản phẩm"> </v-text-field>
                   <v-text-field @focus="rule.name" v-model="form.name" :rules="rule.name" label="Tên sản phẩm" required> </v-text-field>
-                  <v-text-field @focus="rule.description" v-model="form.description" :rules="rule.description" label="Mô tả" required> </v-text-field>
-                  <v-text-field @blur="is_show_price = false" @focus="is_show_price = true" v-model="displayPrice" :rules="rule.price" label="Giá" required></v-text-field>
+                  <v-text-field v-model="form.description" label="Mô tả" required> </v-text-field>
+                  <v-text-field @blur="shouldFormatPrice = false" @focus="shouldFormatPrice = true" v-model="displayPrice" :rules="rule.price" label="Giá" required></v-text-field>
                 </v-col>
               </v-row>
             </v-card-text>
@@ -27,35 +27,26 @@
   </v-col>
 </template>
 <script>
-import App from './../../../../plugins/app';
-
 export default {
   data() {
     return {
-      app: new App(),
       dialog: false,
       loading: false,
       valid: true,
-      is_show_price: false,
+      shouldFormatPrice: false,
       form: {
-        _id: 0,
         code: '',
         name: '',
         description: '',
         price: 0,
       },
       rule: {
-        price: [v => v !== this.formatCurrency(0) || 'Giá phải lớn hơn 0'],
+        price: [v => v !== app.formatCurrency(0) || 'Giá phải lớn hơn 0'],
         name: [v => !!v || 'Vui lòng nhập vào tên sản phẩm'],
-        description: [v => !!v || 'Vui lòng nhập vào mô tả'],
-        code: [v => !!v || 'Vui lòng nhập mã sản phẩm'],
       },
     };
   },
   methods: {
-    formatCurrency(price) {
-      return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
-    },
     close() {
       this.dialog = false;
       this.reset();
@@ -76,9 +67,10 @@ export default {
       if (!this.$refs.form.validate()) {
         return;
       }
-      const product = { ...this.form, created_at: new Date().toLocaleString() };
+      const product = { ...this.form };
       this.loading = true;
-      this.app
+
+      app
         .fetch('api/me/products', {
           headers: {
             'Content-Type': 'application/json',
@@ -86,25 +78,18 @@ export default {
           method: 'POST',
           body: JSON.stringify(product),
         })
-        .then(async res => {
-          this.loading = false;
-          var item = await res.json();
-          this.emitProduct(res, item.data);
+        .then(res => {
+          this.$emit('created', res, this.form);
         });
-    },
-    emitProduct(response, product) {
-      this.$emit('add-product', { response, product });
     },
   },
   computed: {
     displayPrice: {
       get: function() {
-        return this.is_show_price ? this.form.price.toString() : this.formatCurrency(this.form.price);
+        return this.shouldFormatPrice ? this.form.price + '' : app.formatCurrency(this.form.price);
       },
       set: function(modifiedPrice) {
         this.form.price = modifiedPrice.replace(/[^\d.]/g, '') - 0 || 0;
-
-        return this.form.price;
       },
     },
   },

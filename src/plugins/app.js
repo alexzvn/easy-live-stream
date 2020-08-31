@@ -23,7 +23,7 @@ export default class App {
     options = options === undefined ? {} : options;
 
     if (token) {
-      options.headers = { ...options.headers, Authorization: `Bearer ${token}` };
+      options.headers = { ...options.headers, Authorization: `Bearer ${token}`, Accept: 'application/json' };
     }
 
     return fetch(`${this.appPath}/${uri}`, options);

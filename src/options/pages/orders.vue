@@ -31,7 +31,7 @@
               <td>{{ order.total_price }}</td>
               <td>{{ order.status }}</td>
               <td>
-                <v-btn icon color="success" title="Chỉnh sửa đơn hàng">
+                <v-btn icon color="success" title="Chỉnh sửa đơn hàng" @click="openUpdateDialog(order)">
                   <v-icon>mdi-pencil</v-icon>
                 </v-btn>
               </td>
@@ -49,8 +49,10 @@
         <v-pagination v-on:input="viewPage" v-on:next="nextPage" v-on:previous="nextPage" v-model="pagination.current_page" :length="pagination.last_page" :total-visible="7">
         </v-pagination>
       </div>
-      <!-- Modal add new product -->
+      <!-- Modal add new order -->
       <create-order-dialog ref="createDialog" v-on:created="orderCreated"></create-order-dialog>
+      <!-- Modal update order -->
+      <update-order-diaglog ref="updateDialog" v-on:updated="orderUpdated" v-on:deleted="orderDeleted"></update-order-diaglog>
       <!-- Snackbar -->
       <v-col class="snackbar-info" cols="12">
         <v-snackbar v-model="snackbar.visible" :color="snackbar.color" timeout="2000" top="top">
@@ -67,10 +69,12 @@
 </template>
 <script>
 import CreateOrderDialog from './components/livestream/CreateOrderDialog';
+import UpdateOrderDiaglog from './components/livestream/UpdateOrderDiaglog';
 
 export default {
   components: {
     CreateOrderDialog,
+    UpdateOrderDiaglog,
   },
   data: () => {
     return {
@@ -116,6 +120,10 @@ export default {
     openCreateDialog() {
       this.$refs.createDialog.open();
     },
+    async openUpdateDialog(order) {
+      const response = await app.fetch('/api/me/orders/' + order._id);
+      this.$refs.updateDialog.open((await response.json()).data);
+    },
     async orderCreated(response, order) {
       if (!response.ok) {
         return this.alert('Có lỗi trong quá trình tạo đơn hàng', 'danger');
@@ -125,6 +133,18 @@ export default {
       this.alert('Đã thêm đơn hàng mới');
       this.$refs.createDialog.close();
     },
+    orderUpdated(response, order) {
+      if (!response.ok) {
+        return this.alert('Có lỗi trong quá trình tạo đơn hàng', 'danger');
+      }
+
+      const index = this.orders.findIndex(m => m._id === order._id);
+      this.orders.splice(index, 1);
+      this.orders.splice(index, 0, order);
+      this.$refs.updateDialog.close();
+      this.alert('Cập nhật thành công');
+    },
+    orderDeleted(order) {},
     nextPage() {
       this.fetchOrders(this.pagination.current_page);
     },

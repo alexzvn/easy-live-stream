@@ -2,23 +2,24 @@
   <v-col class="modal-add-product" cols="12">
     <v-row justify="center">
       <v-dialog v-model="dialog" persistent max-width="550">
-        <v-form ref="form" @submit.prevent="submitHandler">
+        <v-form ref="form">
           <v-card>
             <v-card-title class="headline title-dialog-add-product">Cập nhật sản phẩm</v-card-title>
             <v-card-text>
               <v-row>
                 <v-col cols="12">
-                  <v-text-field @focus="rule.code" v-model="form.code" :rules="rule.code" label="Mã sản phẩm" required> </v-text-field>
+                  <v-text-field v-model="form.code" label="Mã sản phẩm" required> </v-text-field>
                   <v-text-field @focus="rule.name" v-model="form.name" :rules="rule.name" label="Tên sản phẩm" required> </v-text-field>
-                  <v-text-field @focus="rule.description" v-model="form.description" :rules="rule.description" label="Mô tả" required> </v-text-field>
+                  <v-text-field v-model="form.description" label="Mô tả" required> </v-text-field>
                   <v-text-field @blur="is_show_price = false" @focus="is_show_price = true" v-model="displayPrice" :rules="rule.price" label="Giá" required></v-text-field>
                 </v-col>
               </v-row>
             </v-card-text>
-            <v-card-actions>
+            <v-card-actions fixed>
               <v-spacer></v-spacer>
+              <v-btn class="text-capitalize" color="error" @click="deleteProduct()" outlined left absolute>Xóa Sản phẩm</v-btn>
               <v-btn class="text-capitalize" color="light" @click="close()">Đóng</v-btn>
-              <v-btn class="text-capitalize" type="submit" :loading="loading" :disabled="false" color="primary"> <v-icon left>mdi-plus</v-icon> Cập nhật </v-btn>
+              <v-btn class="text-capitalize" :loading="loading" @click="update" :disabled="false" color="primary"> <v-icon left>mdi-plus</v-icon> Cập nhật </v-btn>
             </v-card-actions>
           </v-card>
         </v-form>
@@ -26,17 +27,15 @@
     </v-row>
   </v-col>
 </template>
-<script>
-import App from './../../../../plugins/app';
 
+<script>
 export default {
   data() {
     return {
-      app: new App(),
       dialog: false,
       loading: false,
       valid: true,
-      is_show_price: false,
+      shouldShowPrice: false,
       form: {
         _id: 0,
         code: '',
@@ -45,17 +44,12 @@ export default {
         price: 0,
       },
       rule: {
-        price: [v => v !== this.formatCurrency(0) || 'Giá phải lớn hơn 0'],
+        price: [v => v !== app.formatCurrency(0) || 'Giá phải lớn hơn 0'],
         name: [v => !!v || 'Vui lòng nhập vào tên sản phẩm'],
-        description: [v => !!v || 'Vui lòng nhập vào mô tả'],
-        code: [v => !!v || 'Vui lòng nhập mã sản phẩm'],
       },
     };
   },
   methods: {
-    formatCurrency(price) {
-      return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
-    },
     close() {
       this.dialog = false;
       this.reset();
@@ -71,14 +65,17 @@ export default {
     },
     open(product) {
       this.dialog = true;
+
       this.form = { ...product };
     },
-    submitHandler() {
+    update() {
       if (!this.$refs.form.validate()) {
         return;
       }
+
       this.loading = true;
-      this.app
+
+      app
         .fetch('api/me/products/' + this.form._id, {
           headers: {
             'Content-Type': 'application/json',
@@ -86,23 +83,24 @@ export default {
           method: 'PUT',
           body: JSON.stringify(this.form),
         })
-        .then(async res => {
+        .then(res => {
           this.loading = false;
-          this.emitProduct(res, this.form);
+          this.$emit('updated', res, this.form);
         });
     },
-    emitProduct(response, product) {
-      this.$emit('update-product', { response, product });
+    deleteProduct() {
+      const product = { ...this.form };
+
+      app.fetch('api/me/products/' + product._id, { method: 'DELETE' }).then(res => this.$emit('deleted', res, product));
     },
   },
   computed: {
     displayPrice: {
       get: function() {
-        return this.is_show_price ? this.form.price.toString() : this.formatCurrency(this.form.price);
+        return this.shouldShowPrice ? this.form.price + '' : app.formatCurrency(this.form.price);
       },
       set: function(modifiedPrice) {
         this.form.price = modifiedPrice.replace(/[^\d.]/g, '') - 0 || 0;
-        return this.form.price;
       },
     },
   },

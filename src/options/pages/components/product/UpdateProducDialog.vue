@@ -4,7 +4,7 @@
       <v-dialog v-model="dialog" persistent max-width="550">
         <v-form ref="form" @submit.prevent="submitHandler">
           <v-card>
-            <v-card-title class="headline title-dialog-add-product">Thêm sản phẩm</v-card-title>
+            <v-card-title class="headline title-dialog-add-product">Cập nhật sản phẩm</v-card-title>
             <v-card-text>
               <v-row>
                 <v-col cols="12">
@@ -18,7 +18,7 @@
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn class="text-capitalize" color="light" @click="close()">Đóng</v-btn>
-              <v-btn class="text-capitalize" type="submit" :loading="loading" :disabled="false" color="primary"> <v-icon left>mdi-plus</v-icon> Thêm mới </v-btn>
+              <v-btn class="text-capitalize" type="submit" :loading="loading" :disabled="false" color="primary"> <v-icon left>mdi-plus</v-icon> Cập nhật </v-btn>
             </v-card-actions>
           </v-card>
         </v-form>
@@ -69,31 +69,30 @@ export default {
         price: 0,
       };
     },
-    open() {
+    open(product) {
       this.dialog = true;
+      this.form = { ...product };
     },
     submitHandler() {
       if (!this.$refs.form.validate()) {
         return;
       }
-      const product = { ...this.form, created_at: new Date().toLocaleString() };
       this.loading = true;
       this.app
-        .fetch('api/me/products', {
+        .fetch('api/me/products/' + this.form._id, {
           headers: {
             'Content-Type': 'application/json',
           },
-          method: 'POST',
-          body: JSON.stringify(product),
+          method: 'PUT',
+          body: JSON.stringify(this.form),
         })
         .then(async res => {
           this.loading = false;
-          var item = await res.json();
-          this.emitProduct(res, item.data);
+          this.emitProduct(res, this.form);
         });
     },
     emitProduct(response, product) {
-      this.$emit('add-product', { response, product });
+      this.$emit('update-product', { response, product });
     },
   },
   computed: {
@@ -103,7 +102,6 @@ export default {
       },
       set: function(modifiedPrice) {
         this.form.price = modifiedPrice.replace(/[^\d.]/g, '') - 0 || 0;
-
         return this.form.price;
       },
     },

@@ -47,7 +47,9 @@
         </table>
       </div>
       <div class="wrap-action" style="text-align: center;">
-        <a href="https://www.facebook.com/live/producer/" target="_blank" class="btn-popup btn-second btn-action">Bắt đầu Live Stream</a>
+        <a href="#" @click="startLiveStream" class="btn-popup btn-second btn-action">
+          {{ message }}
+        </a>
         <button class="btn-popup btn-pri btn-action">Xuất Excel</button>
       </div>
     </div>
@@ -69,6 +71,10 @@ export default {
     return {
       app: new App(),
       user: null,
+      isLivePage: false,
+      isStreaming: false,
+      message: 'Bắt đầu Live Stream',
+      streamId: null,
     };
   },
   methods: {
@@ -76,13 +82,51 @@ export default {
       window.close();
     },
 
+    startLiveStream() {
+      if (!this.isLivePage) {
+        return this.$browser.tabs.create({ url: 'https://www.facebook.com/live/producer/' });
+      }
+
+      this.app
+        .fetch('api/me/streams/' + this.streamId + '/subscribe')
+        .then(res => res.json())
+        .then(response => {
+          if (response.success) {
+            this.isStreaming = true;
+            return (this.message = 'Đang live stream');
+          }
+
+          alert(response.message);
+        });
+    },
+
+    async getCurrentTabUrl() {
+      const tabs = await this.$browser.tabs.query({ active: true, currentWindow: true });
+
+      return tabs[0].url;
+    },
+
     async init() {
       this.app.user().then(user => {
         this.user = user;
       });
+
+      this.getCurrentTabUrl().then(url => {
+        const liveUrl = /https:\/\/www.facebook.com\/live\/producer\/([0-9]+)|\//g;
+
+        url = liveUrl.exec(url);
+
+        url = url !== null && url[1] ? url[1] : null;
+
+        if (url) {
+          this.isLivePage = true;
+          this.streamId = url;
+          this.message = 'Bắt đầu thu comment';
+        }
+      });
     },
   },
-  created() {
+  async created() {
     this.init();
   },
 };

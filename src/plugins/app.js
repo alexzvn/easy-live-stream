@@ -21,7 +21,7 @@ export default class App {
     const token = await this.token();
 
     if (token) {
-      options.headers = { ...options.headers, Authorization: `Bearer ${token}` };
+      options.headers = { ...options.headers, Authorization: `Bearer ${token}`, Accept: 'application/json' };
     }
 
     if (/^(http(s?):\/\/).+$/.test(uri)) {

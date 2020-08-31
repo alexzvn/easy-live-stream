@@ -1,10 +1,10 @@
 <template>
   <div>
-    <v-row v-if="user">
+    <v-row>
       <v-col cols="12">
         <h1>
           Thêm mới sản phẩm
-          <v-btn class="mx-2" fab small dark color="success" @click="openCreate()">
+          <v-btn class="mx-2" fab small dark color="success" @click="showCreateDialog">
             <v-icon dark>mdi-plus</v-icon>
           </v-btn>
         </h1>
@@ -24,18 +24,18 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(item, index) in products" :key="index++">
-                <td>{{ index }}</td>
-                <td>{{ item.code }}</td>
-                <td>{{ item.name }}</td>
-                <td>{{ item.description }}</td>
-                <td>{{ formatCurrency(item.price) }}</td>
-                <td>{{ item.created_at }}</td>
+              <tr v-for="(product, index) in productsMapped" :key="index">
+                <td>{{ index + 1 }}</td>
+                <td>{{ product.code }}</td>
+                <td>{{ product.name }}</td>
+                <td>{{ product.description }}</td>
+                <td>{{ product.price }}</td>
+                <td>{{ product.created_at }}</td>
                 <td>
-                  <v-btn icon color="success" @click="openUpdate(item)">
+                  <v-btn icon color="success" @click="openUpdate(product)">
                     <v-icon>mdi-pencil</v-icon>
                   </v-btn>
-                  <v-btn icon color="#B00020" @click="openDelete(item)">
+                  <v-btn icon color="#B00020" @click="openDelete(product)">
                     <v-icon>mdi-trash-can-outline</v-icon>
                   </v-btn>
                 </td>
@@ -44,15 +44,21 @@
           </template>
         </v-simple-table>
         <div class="text-center mt-4">
-          <v-pagination v-model="page" :length="3"></v-pagination>
+          <v-pagination
+            v-model="pagination.current_page"
+            :length="pagination.last_page"
+            v-on:input="fetchProducts"
+            v-on:next="nextPage"
+            v-on:previous="previousPage"
+            :total-visible="7"
+          >
+          </v-pagination>
         </div>
       </v-col>
       <!-- Modal add new product -->
-      <add-product-dialog ref="dialogAddProduct" v-on:add-product="addProduct"></add-product-dialog>
+      <add-product-dialog ref="addDialog" v-on:created="addProduct"></add-product-dialog>
       <!-- Modal update product -->
-      <update-product-dialog ref="dialogUpdateProduct" v-on:update-product="updateProduct"></update-product-dialog>
-      <!-- Modal delete new product -->
-      <delete-product ref="dialogDeleteProduct" v-on:delete-product="deleteProduct"></delete-product>
+      <update-product-dialog ref="dialogUpdateProduct"></update-product-dialog>
       <!-- Snackbar -->
       <v-col class="snackbar-info" cols="12">
         <v-snackbar v-model="snackbar.visible" :color="snackbar.color" timeout="2000" top="top">
@@ -65,34 +71,27 @@
         </v-snackbar>
       </v-col>
     </v-row>
-    <v-row v-if="!user">
-      <v-col cols="12">
-        Bạn chưa đăng nhập
-        <v-btn>
-          Đăng nhập
-        </v-btn>
-      </v-col>
-    </v-row>
   </div>
 </template>
 <script>
 import AddProductDialog from './components/product/AddProductDialog';
 import UpdateProductDialog from './components/product/UpdateProducDialog';
-import DeleteProduct from './components/product/DeleteProducts';
 
-import App from './../../plugins/app';
 export default {
   components: {
     AddProductDialog,
     UpdateProductDialog,
-    DeleteProduct,
   },
   data: () => {
     return {
-      app: new App(),
-      user: null,
-      page: 1,
       products: [],
+      pagination: {
+        current_page: 0,
+        from: 0,
+        last_page: 0,
+        per_page: 20,
+        to: 0,
+      },
       snackbar: {
         color: '',
         visible: false,
@@ -100,52 +99,37 @@ export default {
       },
     };
   },
-  methods: {
-    formatCurrency(price) {
-      return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
-    },
-    openCreate() {
-      this.$refs.dialogAddProduct.open();
-    },
-    openUpdate(item) {
-      this.$refs.dialogUpdateProduct.open(item);
-    },
-    openDelete(item) {
-      this.$refs.dialogDeleteProduct.open(item);
-    },
-    async addProduct(result) {
-      this.$refs.dialogAddProduct.reset();
-      this.$refs.dialogAddProduct.close();
+  computed: {
+    productsMapped() {
+      const formatPrice = price => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
 
-      if (!result.response.ok) {
-        this.alert('Thêm thất bại', 'rgb(176, 0, 32)');
-        return;
-      }
-      this.alert('Thêm thành công sản phẩm');
-      this.products.unshift(result.product);
+      return this.products.map(product => {
+        return {
+          ...product,
+          price: formatPrice(product.price),
+          created_at: new Date(product.created_at).toLocaleString(),
+        };
+      });
     },
-    updateProduct(result) {
-      this.$refs.dialogUpdateProduct.reset();
-      this.$refs.dialogUpdateProduct.close();
-      if (!result.response.ok) {
-        this.alert('Cập nhật thất bại', 'rgb(176, 0, 32)');
-        return;
-      }
-      const item = result.product;
-      const index = this.products.findIndex(x => x._id === item._id);
-      this.products[index].code = item.code;
-      this.products[index].name = item.name;
-      this.products[index].description = item.description;
-      this.products[index].price = item.price;
+  },
+  methods: {
+    nextPage() {
+      this.fetchProducts(this.pagination.current_page);
     },
-    deleteProduct(data) {
-      if (data.res.ok) {
-        this.alert('Xóa thành công sản phẩm');
-        this.products = this.products.filter(m => m._id !== data.item._id);
-        this.$refs.dialogDeleteProduct.close();
-      } else {
-        this.alert('Xóa thất bại', 'rgb(176, 0, 32)');
+    previousPage() {
+      this.fetchProducts(this.pagination.current_page - 1);
+    },
+    showCreateDialog() {
+      this.$refs.addDialog.open();
+    },
+    async addProduct(response) {
+      if (!response.ok) {
+        return this.alert('Có lỗi trong quá trình thực hiện', 'danger');
       }
+
+      this.products.unshift((await response.json()).data);
+      this.alert('Đã thêm mới sản phẩm');
+      this.$refs.addDialog.close();
     },
     alert(text = '', color = 'success') {
       this.snackbar = {
@@ -154,24 +138,18 @@ export default {
         visible: true,
       };
     },
-    async initProducts() {
-      this.app.fetch('api/me/products/').then(async res => {
-        const listProducts = await res.json();
-        if (!res.ok) return;
-        this.products = listProducts.data;
-      });
-    },
-    async init() {
-      this.app.user().then(user => {
-        this.user = user;
-        if (user) {
-          this.initProducts();
-        }
-      });
+    fetchProducts(page = 1) {
+      app
+        .fetch(`api/me/products?item=${this.pagination.per_page}&page=${page}`)
+        .then(res => res.json())
+        .then(body => {
+          this.products = body.data;
+          this.pagination = body.meta;
+        });
     },
   },
   created() {
-    this.init();
+    this.fetchProducts();
   },
 };
 </script>

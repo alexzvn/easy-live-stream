@@ -120,7 +120,7 @@ export default {
 
       const product = (await response.json()).data;
       const index = this.products.findIndex(x => x._id === product._id);
-      this.products[index] = product;
+      this.$set(this.products, index, product);
 
       this.$refs.updateDialog.close();
       this.alert('Cập nhật thành công');

@@ -11,7 +11,7 @@
                   <v-text-field v-model="form.code" label="Mã sản phẩm" required> </v-text-field>
                   <v-text-field @focus="rule.name" v-model="form.name" :rules="rule.name" label="Tên sản phẩm" required> </v-text-field>
                   <v-text-field v-model="form.description" label="Mô tả" required> </v-text-field>
-                  <v-text-field @blur="is_show_price = false" @focus="is_show_price = true" v-model="displayPrice" :rules="rule.price" label="Giá" required></v-text-field>
+                  <v-text-field @blur="shouldShowPrice = false" @focus="shouldShowPrice = true" v-model="displayPrice" :rules="rule.price" label="Giá" required></v-text-field>
                 </v-col>
               </v-row>
             </v-card-text>

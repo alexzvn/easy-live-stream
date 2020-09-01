@@ -23,7 +23,7 @@
                     dense
                     deletable-chips
                   ></v-autocomplete>
-                  <v-textarea v-model="form.note" label="Ghi chú"></v-textarea>
+                  <v-textarea v-model="form.note" :rows="1" label="Ghi chú"></v-textarea>
                 </v-col>
               </v-row>
             </v-card-text>

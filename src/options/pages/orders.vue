@@ -173,7 +173,6 @@ export default {
   },
   created() {
     this.fetchOrders();
-    this.openUpdateDialog('5f4d54c313c49e0a2879f03a');
   },
 };
 </script>

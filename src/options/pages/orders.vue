@@ -31,7 +31,7 @@
               <td>{{ order.total_price }}</td>
               <td>{{ order.status }}</td>
               <td>
-                <v-btn icon color="success" title="Chỉnh sửa đơn hàng" @click="openUpdateDialog(order)">
+                <v-btn icon color="success" title="Chỉnh sửa đơn hàng" @click="openUpdateDialog(order._id)">
                   <v-icon>mdi-pencil</v-icon>
                 </v-btn>
               </td>
@@ -52,7 +52,7 @@
       <!-- Modal add new order -->
       <create-order-dialog ref="createDialog" v-on:created="orderCreated"></create-order-dialog>
       <!-- Modal update order -->
-      <update-order-diaglog ref="updateDialog" v-on:updated="orderUpdated" v-on:deleted="orderDeleted"></update-order-diaglog>
+      <update-order-diaglog ref="updateDialog" v-on:updated="orderUpdated"></update-order-diaglog>
       <!-- Snackbar -->
       <v-col class="snackbar-info" cols="12">
         <v-snackbar v-model="snackbar.visible" :color="snackbar.color" timeout="2000" top="top">
@@ -120,8 +120,8 @@ export default {
     openCreateDialog() {
       this.$refs.createDialog.open();
     },
-    async openUpdateDialog(order) {
-      const response = await app.fetch('/api/me/orders/' + order._id);
+    async openUpdateDialog(idOrder) {
+      const response = await app.fetch('/api/me/orders/' + idOrder);
       this.$refs.updateDialog.open((await response.json()).data);
     },
     async orderCreated(response, order) {
@@ -171,9 +171,9 @@ export default {
       };
     },
   },
-
   created() {
     this.fetchOrders();
+    this.openUpdateDialog('5f4d54c313c49e0a2879f03a');
   },
 };
 </script>

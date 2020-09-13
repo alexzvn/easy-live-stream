@@ -6,6 +6,8 @@ import Application from './../plugins/app';
 
 global.app = new Application();
 
+Vue.prototype.$app = global.app;
+
 app.user().then(user => {
   global.user = user;
 

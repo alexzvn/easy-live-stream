@@ -51,6 +51,23 @@ export default class App {
     return cookie ? cookie.value : null;
   }
 
+  findMatchPhoneNumber(input) {
+    // console.log('comment : ', input);
+    const re = /(\+?84|0)(\s|\.)?(\d{1,4})(\s|\.)?(\d{2,4})(\s|\.)?(\d{2,5})/gim;
+    const matchPhoneNumbers = input.match(re);
+    return matchPhoneNumbers ? matchPhoneNumbers[0] : '';
+  }
+
+  normalizePhone(phoneNumber) {
+    const re = /^(\+?84|0)(\s|\.)?(\d{1,4})(\s|\.)?(\d{2,4})(\s|\.)?(\d{2,5})$/;
+    if (!re.test(phoneNumber)) {
+      throw new Error('Số điện thoại không đúng định dạng');
+    }
+
+    const matches = re.exec(phoneNumber);
+    return `0${matches[3]}${matches[5]}${matches[7]}`;
+  }
+
   formatCurrency(price) {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
   }

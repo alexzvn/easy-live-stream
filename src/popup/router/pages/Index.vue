@@ -107,8 +107,8 @@ export default {
     },
 
     async init() {
-      this.app.user().then(user => {
-        this.user = user;
+      this.app.token().then(user => {
+        this.user = !!user;
       });
 
       this.getCurrentTabUrl().then(url => {

@@ -97,7 +97,7 @@ export default {
 
       this.loading = true;
 
-      app
+      this.$app
         .fetch('api/me/orders', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -110,8 +110,7 @@ export default {
     },
   },
   created() {
-    // eslint-disable-next-line prettier/prettier
-    app
+    this.$app
       .fetch('api/me/products?item=1000')
       .then(res => res.json())
       .then(body => {

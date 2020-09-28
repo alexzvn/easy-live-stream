@@ -10,7 +10,7 @@
                 <v-col cols="12">
                   <v-text-field @focus="rule.name" v-model="form.name" :rules="rule.name" label="Tên người đặt" required> </v-text-field>
                   <v-text-field @focus="rule.phone" v-model="form.phone" :rules="rule.phone" label="Số điện thoại" required> </v-text-field>
-                  <v-text-field @focus="rule.address" v-model="form.address" :rules="rule.address" label="Địa chỉ giao hàng" required> </v-text-field>
+                  <v-text-field @focus="rule.address" v-model="form.address" label="Địa chỉ giao hàng" required> </v-text-field>
                   <v-autocomplete
                     placeholder="Chọn sản phẩm"
                     v-model="form.products"
@@ -55,7 +55,6 @@ export default {
       rule: {
         name: [v => !!v || 'Hãy điền tên người đặt hàng.'],
         phone: [v => !!v || 'Vui lòng nhập SĐT người đặt.'],
-        address: [v => !!v || 'Trường địa chỉ giao hàng không được bỏ trống.'],
         products: [v => v.length > 0 || 'Xin hãy chọn ít nhất một sản phẩm'],
       },
       products: [],

@@ -52,10 +52,11 @@ export default class App {
   }
 
   findMatchPhoneNumber(input) {
-    // console.log('comment : ', input);
     const re = /(\+?84|0)(\s|\.)?(\d{1,4})(\s|\.)?(\d{2,4})(\s|\.)?(\d{2,5})/gim;
+
     const matchPhoneNumbers = input.match(re);
-    return matchPhoneNumbers ? matchPhoneNumbers[0] : '';
+
+    return matchPhoneNumbers ? matchPhoneNumbers[0] : null;
   }
 
   normalizePhone(phoneNumber) {
@@ -69,7 +70,14 @@ export default class App {
   }
 
   formatCurrency(price) {
-    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
+    return (price - 0)
+      .toFixed(1)
+      .replace(/\d(?=(\d{3})+\.)/g, '$&,')
+      .replace(/\.0$/, '');
+  }
+
+  currencyToNumber(currency) {
+    return (currency + '').replace(/[^\d.]/g, '') - 0 || 0;
   }
 
   echo() {

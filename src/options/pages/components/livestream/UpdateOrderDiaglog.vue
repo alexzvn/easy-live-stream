@@ -80,24 +80,10 @@
                 <div class="col-order">
                   <h2 class="mb-5">Thông tin chi phí</h2>
                   <div>
-                    <v-text-field
-                      @blur="shouldFormatPrice = false"
-                      @focus="shouldFormatPrice = true"
-                      v-model="displayPrice"
-                      :rules="rule.price"
-                      label="Giá"
-                      required
-                    ></v-text-field>
-                    <v-text-field v-model="form.discount" label="Discount" required> </v-text-field>
-                    <v-text-field @focus="rule.ship_fee" v-model="form.ship_fee" :rules="rule.ship_fee" label="Phí ship" required> </v-text-field>
-                    <v-text-field
-                      @blur="shouldFormatTotalPrice = false"
-                      @focus="shouldFormatTotalPrice = true"
-                      v-model="displayTotalPrice"
-                      :rules="rule.total_price"
-                      label="Tổng"
-                      required
-                    ></v-text-field>
+                    <currency label="Tiền hàng" required></currency>
+                    <currency label="Giảm giá" required></currency>
+                    <currency label="Phí ship" required></currency>
+                    <currency label="Tổng cộng" required></currency>
                   </div>
                 </div>
               </v-col>
@@ -109,7 +95,13 @@
   </v-row>
 </template>
 <script>
+import Currency from './../currency';
+
 export default {
+  components: {
+    Currency,
+  },
+
   data() {
     return {
       dialog: false,
@@ -119,8 +111,6 @@ export default {
       widgets: false,
       form: {},
       add_product: 0,
-      shouldFormatTotalPrice: false,
-      shouldFormatPrice: false,
       status: [
         { value: 1, text: 'Đang chờ' },
         { value: 2, text: 'Đang xử lý' },
@@ -177,7 +167,7 @@ export default {
       }
       const order = { ...this.form };
       this.loading = true;
-      app
+      this.$app
         .fetch('api/me/orders/' + order._id, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
@@ -189,26 +179,8 @@ export default {
         });
     },
   },
-  computed: {
-    displayPrice: {
-      get: function() {
-        return this.shouldFormatPrice ? this.form.price + '' : app.formatCurrency(this.form.price);
-      },
-      set: function(modifiedPrice) {
-        this.form.price = modifiedPrice.replace(/[^\d.]/g, '') - 0 || 0;
-      },
-    },
-    displayTotalPrice: {
-      get: function() {
-        return this.shouldFormatTotalPrice ? this.form.total_price + '' : app.formatCurrency(this.form.total_price);
-      },
-      set: function(modifiedPrice) {
-        this.form.total_price = modifiedPrice.replace(/[^\d.]/g, '') - 0 || 0;
-      },
-    },
-  },
   created() {
-    app
+    this.$app
       .fetch('api/me/products?item=1000')
       .then(res => res.json())
       .then(body => {

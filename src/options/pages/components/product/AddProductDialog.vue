@@ -27,7 +27,7 @@
   </v-col>
 </template>
 <script>
-import Currency from './../../currency';
+import Currency from './../currency';
 
 export default {
   components: {

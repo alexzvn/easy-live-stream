@@ -11,7 +11,7 @@
                   <v-text-field v-model="form.code" :value="form.code.toUpperCase()" @input="form.code = form.code.toUpperCase()" label="Mã sản phẩm"> </v-text-field>
                   <v-text-field @focus="rule.name" v-model="form.name" :rules="rule.name" label="Tên sản phẩm" required> </v-text-field>
                   <v-text-field v-model="form.description" label="Mô tả" required> </v-text-field>
-                  <v-text-field @blur="shouldFormatPrice = false" @focus="shouldFormatPrice = true" v-model="displayPrice" :rules="rule.price" label="Giá" required></v-text-field>
+                  <currency v-model="form.price" :rules="rule.price" label="Giá" required></currency>
                 </v-col>
               </v-row>
             </v-card-text>
@@ -27,13 +27,18 @@
   </v-col>
 </template>
 <script>
+import Currency from './../../currency';
+
 export default {
+  components: {
+    Currency,
+  },
+
   data() {
     return {
       dialog: false,
       loading: false,
       valid: true,
-      shouldFormatPrice: false,
       form: {
         code: '',
         name: '',
@@ -41,11 +46,12 @@ export default {
         price: 0,
       },
       rule: {
-        price: [v => v !== app.formatCurrency(0) || 'Giá phải lớn hơn 0'],
+        price: [v => app.currencyToNumber(v) > 0 || 'Giá phải lớn hơn 0'],
         name: [v => !!v || 'Vui lòng nhập vào tên sản phẩm'],
       },
     };
   },
+
   methods: {
     close() {
       this.dialog = false;
@@ -81,16 +87,6 @@ export default {
         .then(res => {
           this.$emit('created', res, this.form);
         });
-    },
-  },
-  computed: {
-    displayPrice: {
-      get: function() {
-        return this.shouldFormatPrice ? this.form.price + '' : app.formatCurrency(this.form.price);
-      },
-      set: function(modifiedPrice) {
-        this.form.price = modifiedPrice.replace(/[^\d.]/g, '') - 0 || 0;
-      },
     },
   },
 };

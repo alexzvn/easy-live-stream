@@ -68,8 +68,8 @@
   </v-row>
 </template>
 <script>
-import CreateOrderDialog from './components/livestream/CreateOrderDialog';
-import UpdateOrderDiaglog from './components/livestream/UpdateOrderDiaglog';
+import CreateOrderDialog from './components/comment/CreateOrderDialog';
+import UpdateOrderDiaglog from './components/comment/UpdateOrderDiaglog';
 
 export default {
   components: {

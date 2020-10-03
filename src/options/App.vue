@@ -11,12 +11,12 @@
           </v-list-item-content>
         </v-list-item>
 
-        <v-list-item link :to="{ path: '/livestream' }">
+        <v-list-item link :to="{ path: '/comment' }">
           <v-list-item-action>
-            <v-icon>mdi-antenna</v-icon>
+            <v-icon>mdi-comment-outline</v-icon>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title>Live Stream</v-list-item-title>
+            <v-list-item-title>Bình luận</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
 

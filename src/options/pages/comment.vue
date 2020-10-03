@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import CreateOrderDialog from './components/livestream/CreateOrderDialog';
+import CreateOrderDialog from './components/comment/CreateOrderDialog';
 
 export default {
   components: {

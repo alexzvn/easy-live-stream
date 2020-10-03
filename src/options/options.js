@@ -8,14 +8,21 @@ global.app = new Application();
 
 Vue.prototype.$app = global.app;
 
-app.user().then(user => {
-  global.user = user;
+global.app
+  .token()
+  .then(token => {
+    if (token) {
+      return global.app.user();
+    }
+  })
+  .then(user => {
+    global.user = user;
 
-  // eslint-disable-next-line no-new
-  new Vue({
-    el: '#app',
-    router,
-    vuetify,
-    render: h => h(Template),
+    // eslint-disable-next-line no-new
+    new Vue({
+      el: '#app',
+      router,
+      vuetify,
+      render: h => h(Template),
+    });
   });
-});

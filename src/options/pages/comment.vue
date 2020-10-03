@@ -55,11 +55,9 @@ export default {
   },
   methods: {
     initialize() {
-      // eslint-disable-next-line no-undef
-      app.Echo.channel(user._id).listen('CommentCreated', data => this.addComment(data.comment));
+      this.$app.Echo.channel(user._id).listen('CommentCreated', data => this.addComment(data.comment));
 
-      // eslint-disable-next-line prettier/prettier
-      app
+      this.$app
         .fetch('api/me/comments')
         .then(res => res.json())
         .then(body => {

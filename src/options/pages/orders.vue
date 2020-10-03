@@ -121,7 +121,7 @@ export default {
       this.$refs.createDialog.open();
     },
     async openUpdateDialog(idOrder) {
-      const response = await app.fetch('/api/me/orders/' + idOrder);
+      const response = await this.$app.fetch('/api/me/orders/' + idOrder);
       this.$refs.updateDialog.open((await response.json()).data);
     },
     async orderCreated(response, order) {
@@ -155,7 +155,7 @@ export default {
       this.fetchOrders(this.pagination.current_page - 1);
     },
     fetchOrders(page = 1) {
-      app
+      this.$app
         .fetch(`/api/me/orders?item=${this.pagination.per_page}&page=${page}`)
         .then(res => res.json())
         .then(body => {

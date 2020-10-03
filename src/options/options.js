@@ -14,8 +14,12 @@ global.app
     if (token) {
       return global.app.user();
     }
+
+    return false;
   })
   .then(user => {
+    if (user === false) return;
+
     global.user = user;
 
     // eslint-disable-next-line no-new

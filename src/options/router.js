@@ -4,6 +4,7 @@ import PageIndex from './pages/index';
 import PageComment from './pages/comment';
 import PageProducts from './pages/products';
 import PageOrders from './pages/orders';
+import PageLivestream from './pages/livestream';
 
 Vue.use(VueRouter);
 
@@ -14,6 +15,11 @@ export default new VueRouter({
       name: 'home',
       path: '/home',
       component: PageIndex,
+    },
+    {
+      name: 'livestream',
+      path: '/livestream',
+      component: PageLivestream,
     },
     {
       name: 'comment',
